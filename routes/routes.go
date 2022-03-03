@@ -8,7 +8,7 @@ import (
 func HandleRequests() {
 	addr := "127.0.0.1:8080"
 	r := gin.Default()
-	r.GET("/alunos", controllers.ExibeTodosAlunos)
+	
 	r.GET("/:nome", controllers.Saudacao)
 	r.POST("/:criar", controllers.CriarNovoAluno)
 	r.GET("/alunos/:id", controllers.BucaAlunoPorId)

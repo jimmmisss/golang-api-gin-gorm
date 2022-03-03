@@ -8,7 +8,7 @@ import (
 	"github.com/jimmmisss/go-api-gin-gorm/models"
 )
 
-func ExibeTodosAlunos(c *gin.Context) {
+func TodosAlunos(c *gin.Context) {
 	var alunos []models.Aluno
 	database.DB.Find(&alunos)
 	c.JSON(200, alunos)
