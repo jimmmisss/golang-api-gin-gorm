@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 
 	"github.com/gin-gonic/gin"
@@ -69,5 +72,59 @@ func TestBuscaAlunoPorCPFHandler(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/alunos/12345678901", nil)
 	resposta := httptest.NewRecorder()
 	r.ServeHTTP(resposta, req)
+	assert.Equal(t, http.StatusOK, resposta.Code)
+}
+
+func TestBuscaAlunoPorIdFHandler(t *testing.T) {
+	database.ConectaComBancoDeDados()
+	CriaAlunoMock()
+	defer DeletaAlunMock()
+	r := SetupRotasTest()
+	r.GET("/alunos/:id", controllers.BucaAlunoPorId)
+	pathDaBusca := "/aluno" + strconv.Itoa(ID)
+	req, _ := http.NewRequest("GET", pathDaBusca, nil)
+	resposta := httptest.NewRecorder()
+	r.ServeHTTP(resposta, req)
+	var alunoMock models.Aluno
+	json.Unmarshal(resposta.Body.Bytes(), &alunoMock)
+	assert.Equal(t, "Wesley Pereira", alunoMock.Nome, "Os nomes devem ser iguais")
+	assert.Equal(t, "12345678901", alunoMock.CPF)
+	assert.Equal(t, "123456789", alunoMock.RG)
+	assert.Equal(t, http.StatusOK, resposta.Code)
+}
+
+func TestDeletaAlunoHandler(t *testing.T) {
+	database.ConectaComBancoDeDados()
+	CriaAlunoMock()
+	r := SetupRotasTest()
+	r.DELETE("/alunos/:id", controllers.DeletaAluno)
+	pathDaBusca := "/aluno" + strconv.Itoa(ID)
+	req, _ := http.NewRequest("GET", pathDaBusca, nil)
+	resposta := httptest.NewRecorder()
+	r.ServeHTTP(resposta, req)
+	assert.Equal(t, http.StatusOK, resposta.Code)
+}
+
+func TestAtualizaAlunoFHandler(t *testing.T) {
+	database.ConectaComBancoDeDados()
+	CriaAlunoMock()
+	defer DeletaAlunMock()
+	r := SetupRotasTest()
+	r.PATCH("/alunos/:id", controllers.EditaAluno)
+	aluno := models.Aluno{
+		Nome: "Wesley Pereira",
+		CPF:  "12345678901",
+		RG:   "123456789",
+	}
+	valorJson, _ := json.Marshal(aluno)
+	pathDaEditar := "/aluno/" + strconv.Itoa(ID)
+	req, _ := http.NewRequest("GET", pathDaEditar, bytes.NewBuffer(valorJson))
+	resposta := httptest.NewRecorder()
+	r.ServeHTTP(resposta, req)
+	var alunoMockAtializado models.Aluno
+	json.Unmarshal(resposta.Body.Bytes(), &alunoMockAtializado)
+	assert.Equal(t, "Wesley Pereira", alunoMockAtializado.Nome, "Os nomes devem ser iguais")
+	assert.Equal(t, "12345678901", alunoMockAtializado.CPF)
+	assert.Equal(t, "123456789", alunoMockAtializado.RG)
 	assert.Equal(t, http.StatusOK, resposta.Code)
 }
