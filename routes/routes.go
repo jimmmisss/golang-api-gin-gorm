@@ -11,13 +11,13 @@ func HandleRequests() {
 	r.LoadHTMLGlob("templates/*")
 	r.Static("/assets", "./assets")
 	r.NoRoute(controllers.RotaNaoEncontrada)
-
+	r.GET("/alunos", controllers.TodosAlunos)
 	r.GET("/:nome", controllers.Saudacao)
 	r.POST("/:criar", controllers.CriarNovoAluno)
 	r.GET("/alunos/:id", controllers.BucaAlunoPorId)
 	r.DELETE("/alunos/:id", controllers.DeletaAluno)
 	r.PATCH("/alunos/:id", controllers.EditaAluno)
-	r.GET("/alunos/:cpf", controllers.BuscaAlunoPorCPF)
+	r.GET("/alunos/cpf/:cpf", controllers.BuscaAlunoPorCPF)
 	r.GET("/index", controllers.ExibePaginaIndex)
 	r.Run(addr)
 }
