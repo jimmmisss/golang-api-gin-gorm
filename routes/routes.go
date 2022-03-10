@@ -19,5 +19,6 @@ func HandleRequests() {
 	r.PATCH("/alunos/:id", controllers.EditaAluno)
 	r.GET("/alunos/cpf/:cpf", controllers.BuscaAlunoPorCPF)
 	r.GET("/index", controllers.ExibePaginaIndex)
+	r.GET("/index", controllers.ExibePaginaIndex)
 	r.Run(addr)
 }
